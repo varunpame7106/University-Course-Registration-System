@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../backend/node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Administrator {
+  admin_id   Int      @id @default(autoincrement())
+  user_id    String   @unique @db.VarChar(50)
+  password   String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  courses    Course[] @relation("AdminCreatedCourses")
+
+  @@map("administrators")
+}
+
+model Department {
+  dept_id   Int       @id @default(autoincrement())
+  dept_name String    @db.VarChar(100)
+  courses   Course[]
+  faculties Faculty[]
+  students  Student[]
+
+  @@map("departments")
+}
+
+model Faculty {
+  faculty_id     Int             @id @default(autoincrement())
+  user_id        String          @unique @db.VarChar(50)
+  password       String          @db.VarChar(255)
+  first_name     String          @db.VarChar(50)
+  last_name      String          @db.VarChar(50)
+  dob            DateTime        @db.Date
+  gender         Gender
+  address        String          @db.Text
+  domain         String          @db.VarChar(100)
+  designation    String          @db.VarChar(100)
+  contact_no     String          @db.VarChar(15)
+  dept_id        Int
+  created_at     DateTime        @default(now())
+  courseFaculty    CourseFaculty[]
+  createdCourses   Course[]          @relation("FacultyCreatedCourses")
+  department       Department        @relation(fields: [dept_id], references: [dept_id])
+  libraryResources LibraryResource[] @relation("FacultyUploadedResources")
+  schedules        Schedule[]
+
+  @@index([dept_id], map: "faculties_dept_id_fkey")
+  @@map("faculties")
+}
+
+model Student {
+  student_id        Int         @id @default(autoincrement())
+  user_id           String      @unique @db.VarChar(50)
+  password          String      @db.VarChar(255)
+  first_name        String      @db.VarChar(50)
+  last_name         String      @db.VarChar(50)
+  dob               DateTime    @db.Date
+  gender            Gender
+  phone_no          String      @db.VarChar(15)
+  city              String      @db.VarChar(80)
+  state             String      @db.VarChar(80)
+  pincode           String      @db.VarChar(10)
+  address           String?     @db.Text
+  guardian_name     String?     @db.VarChar(100)
+  alt_phone         String?     @db.VarChar(15)
+  emergency_contact String?     @db.VarChar(15)
+  blood_group       String?     @db.VarChar(10)
+  profile_image_url String?     @db.VarChar(500)
+  year_enrolled     Int         @db.Year
+  dept_id           Int
+  created_at        DateTime    @default(now())
+  enrolments        Enrolment[]
+  department        Department  @relation(fields: [dept_id], references: [dept_id])
+
+  @@index([dept_id], map: "students_dept_id_fkey")
+  @@map("students")
+}
+
+model Course {
+  course_id          Int             @id @default(autoincrement())
+  course_name        String          @db.VarChar(150)
+  dept_id            Int
+  duration           String          @db.VarChar(50)
+  mode               CourseMode
+  platform           String?         @db.VarChar(100)
+  college_name       String?         @db.VarChar(150)
+  timing             String          @db.VarChar(100)
+  created_by         Int?
+  created_at         DateTime        @default(now())
+  created_by_faculty Int?
+  created_by_role    String          @default("ADMIN") @db.VarChar(20)
+  description        String?         @db.Text
+  isActive           Boolean         @default(true)
+  courseFaculty      CourseFaculty[]
+  creatorFaculty     Faculty?        @relation("FacultyCreatedCourses", fields: [created_by_faculty], references: [faculty_id])
+  admin              Administrator?  @relation("AdminCreatedCourses", fields: [created_by], references: [admin_id])
+  department         Department      @relation(fields: [dept_id], references: [dept_id])
+  enrolments         Enrolment[]
+  schedules          Schedule[]
+
+  @@index([created_by_faculty], map: "courses_created_by_faculty_fkey")
+  @@index([created_by], map: "courses_created_by_fkey")
+  @@index([dept_id], map: "courses_dept_id_fkey")
+  @@map("courses")
+}
+
+model CourseFaculty {
+  id         Int     @id @default(autoincrement())
+  course_id  Int
+  faculty_id Int
+  course     Course  @relation(fields: [course_id], references: [course_id])
+  faculty    Faculty @relation(fields: [faculty_id], references: [faculty_id])
+
+  @@unique([course_id, faculty_id])
+  @@index([faculty_id], map: "course_faculty_faculty_id_fkey")
+  @@map("course_faculty")
+}
+
+model Enrolment {
+  enrolment_id Int             @id @default(autoincrement())
+  student_id   Int
+  course_id    Int
+  status       EnrolmentStatus @default(Pending)
+  enrolled_at  DateTime        @default(now())
+  course       Course          @relation(fields: [course_id], references: [course_id])
+  student      Student         @relation(fields: [student_id], references: [student_id])
+
+  @@unique([student_id, course_id])
+  @@index([course_id], map: "enrolments_course_id_fkey")
+  @@map("enrolments")
+}
+
+model LibraryResource {
+  id                     Int      @id @default(autoincrement())
+  title                  String   @db.VarChar(255)
+  subject                String   @db.VarChar(100)
+  author                 String   @db.VarChar(100)
+  category               String   @db.VarChar(100)
+  description            String?  @db.Text
+  fileUrl                String   @db.VarChar(500)
+  status                 String   @default("Active") @db.VarChar(20)
+  uploaded_by_faculty_id Int?
+  uploaded_by_name       String?  @db.VarChar(100)
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  uploader Faculty? @relation("FacultyUploadedResources", fields: [uploaded_by_faculty_id], references: [faculty_id])
+
+  @@index([uploaded_by_faculty_id], map: "library_resources_uploaded_by_faculty_id_fkey")
+  @@map("library_resources")
+}
+
+model ExamSchedule {
+  id          Int      @id @default(autoincrement())
+  subjectCode String   @db.VarChar(50)
+  subjectName String   @db.VarChar(150)
+  semester    String   @db.VarChar(50)
+  examDate    DateTime @db.Date
+  startTime   String   @db.VarChar(50)
+  duration    String   @db.VarChar(50)
+  hall        String   @db.VarChar(100)
+  status      String   @default("Upcoming") @db.VarChar(20)
+
+  @@map("exam_schedules")
+}
+
+model GradingRubric {
+  id        Int    @id @default(autoincrement())
+  component String @db.VarChar(100)
+  marks     Int
+
+  @@map("grading_rubrics")
+}
+
+model GradeScale {
+  id         Int    @id @default(autoincrement())
+  grade      String @db.VarChar(10)
+  minPercent Int
+  maxPercent Int
+  gpa        Float
+
+  @@map("grade_scales")
+}
+
+model Holiday {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(150)
+  date        DateTime @db.Date
+  type        String   @db.VarChar(50)
+  description String?  @db.Text
+  status      String   @default("Active") @db.VarChar(20)
+
+  @@map("holidays")
+}
+
+model Schedule {
+  id              Int        @id @default(autoincrement())
+  faculty_id      Int
+  course_id       Int
+  days            String     @db.VarChar(255)
+  start_time      String     @db.VarChar(50)
+  end_time        String     @db.VarChar(50)
+  mode            CourseMode
+  venue           String     @db.VarChar(100)
+  note            String?    @db.Text
+  updated_at      DateTime   @updatedAt
+  updated_by_role String     @default("ADMIN") @db.VarChar(20)
+  course          Course     @relation(fields: [course_id], references: [course_id])
+  faculty         Faculty    @relation(fields: [faculty_id], references: [faculty_id])
+
+  @@unique([faculty_id, course_id])
+  @@index([course_id], map: "schedules_course_id_fkey")
+  @@map("schedules")
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum CourseMode {
+  Online
+  Offline
+}
+
+enum EnrolmentStatus {
+  Pending
+  Approved
+  Dropped
+}

@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-primary-900 selection:bg-accent/30 selection:text-accent;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold text-primary-900 tracking-tight;
+  }
+
+  a { @apply transition-all duration-200; }
+}
+
+@layer components {
+  /* Premium Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
+  }
+
+  /* Enhanced Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-btn font-medium text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/30 focus:ring-accent;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-primary-700 border border-border hover:bg-primary-50 focus:ring-primary-200;
+  }
+  .btn-danger {
+    @apply btn bg-danger text-white hover:bg-red-600 hover:shadow-lg hover:shadow-danger/30 focus:ring-danger;
+  }
+  .btn-ghost {
+    @apply btn text-muted hover:bg-primary-50 hover:text-primary-900;
+  }
+  .btn-sm {
+    @apply px-4 py-1.5 text-xs;
+  }
+  .btn-icon {
+    @apply p-2 rounded-btn aspect-square;
+  }
+
+  /* Premium Cards */
+  .card {
+    @apply bg-surface rounded-card shadow-card border border-border p-6 transition-all duration-300 hover:shadow-card-hover;
+  }
+  .card-sm {
+    @apply bg-surface rounded-card shadow-card border border-border p-4 transition-all duration-300 hover:shadow-md;
+  }
+  .card-gradient {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent;
+  }
+
+  /* Modern Form Elements */
+  .form-input {
+    @apply w-full px-4 py-2.5 border border-border rounded-input text-sm text-primary-900 placeholder-muted/60
+           focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent
+           transition-all duration-200 bg-white shadow-sm;
+  }
+  .form-input-error {
+    @apply form-input border-danger focus:ring-danger/20 focus:border-danger bg-danger-soft;
+  }
+  .form-label {
+    @apply block text-sm font-semibold text-primary-800 mb-1.5 ml-0.5;
+  }
+  .form-error {
+    @apply text-xs text-danger font-medium mt-1.5 ml-1 flex items-center gap-1;
+  }
+  .form-select {
+    @apply form-input appearance-none cursor-pointer pr-10 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat;
+  }
+
+  /* Elegant Tables */
+  .table-wrapper {
+    @apply w-full overflow-hidden rounded-card border border-border bg-white shadow-sm;
+  }
+  .table {
+    @apply w-full text-sm text-left border-collapse;
+  }
+  .table thead {
+    @apply bg-primary-50/50;
+  }
+  .table thead th {
+    @apply px-6 py-4 font-bold text-primary-800 text-xs uppercase tracking-widest border-b border-border;
+  }
+  .table tbody tr {
+    @apply border-b border-border hover:bg-primary-50/30 transition-colors duration-200;
+  }
+  .table tbody tr:last-child {
+    @apply border-b-0;
+  }
+  .table tbody td {
+    @apply px-6 py-4 text-primary-700 leading-relaxed;
+  }
+
+  /* Dynamic Badges */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm;
+  }
+  .badge-pending { @apply bg-warning-soft text-warning border border-warning/20; }
+  .badge-approved { @apply bg-success-soft text-success border border-success/20; }
+  .badge-dropped { @apply bg-danger-soft text-danger border border-danger/20; }
+  .badge-online { @apply bg-blue-50 text-blue-600 border border-blue-200; }
+  .badge-offline { @apply bg-purple-50 text-purple-600 border border-purple-200; }
+
+  /* Premium Sidebar */
+  /* Layout Wrapper utility */
+  .layout-wrapper {
+    @apply flex min-h-screen bg-background relative;
+  }
+
+  .sidebar {
+    @apply fixed left-0 top-0 h-screen w-[78px] hover:w-[270px] bg-primary-900 border-r border-white/5 flex flex-col z-40 shadow-2xl transition-all duration-300 ease-in-out overflow-hidden;
+  }
+  .sidebar-header {
+    @apply p-6 mb-4 flex items-center gap-3;
+  }
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3.5 py-3 rounded-btn text-sm font-medium text-primary-300
+           hover:bg-white/5 hover:text-white transition-all duration-200 mx-3 mb-1 relative;
+  }
+  .sidebar-link-active {
+    @apply sidebar-link bg-accent text-white shadow-lg shadow-accent/20 hover:bg-accent;
+  }
+  .sidebar-footer {
+    @apply mt-auto p-4 border-t border-white/5;
+  }
+
+  /* Refined Page layout */
+  .page-content {
+    @apply ml-[78px] min-h-screen bg-background transition-all duration-300 ease-in-out flex-1 w-full;
+  }
+
+  .layout-wrapper:has(.sidebar:hover) .page-content {
+    @apply ml-[270px];
+  }
+  .page-inner {
+    @apply p-8 max-w-7xl mx-auto;
+  }
+
+  /* Interactive Animations */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  /* Skeleton Loading */
+  .skeleton {
+    @apply animate-pulse bg-primary-100 rounded-md;
+  }
+
+  /* Modal System */
+  .modal-overlay {
+    @apply fixed inset-0 bg-primary-900/60 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300;
+  }
+  .modal-box {
+    @apply bg-white rounded-card shadow-modal w-full max-w-xl max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-300;
+  }
+  .modal-header {
+    @apply flex items-center justify-between px-8 py-6 border-b border-border;
+  }
+  .modal-body {
+    @apply p-8 overflow-y-auto;
+  }
+  .modal-footer {
+    @apply flex items-center justify-end gap-3 px-8 py-6 border-t border-border bg-primary-50/30;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+}
